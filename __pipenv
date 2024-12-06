@@ -1,0 +1,28 @@
+#!/bin/bash
+
+script_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+
+export PYTHONPATH="$script_dir${PYTHONPATH:+:$PYTHONPATH}"
+
+# Function to safely deactivate the virtual environment
+safe_deactivate() {
+    # Check if the VIRTUAL_ENV variable is set, indicating an active virtual environment
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        deactivate
+    fi
+}
+
+# Ensure safe_deactivate is called on script exit
+trap safe_deactivate EXIT
+
+# Activate the virtual environment
+source "$script_dir/.venv/bin/activate"
+
+# Disable pipenv notice about it being used from within virtual environment
+# This helps for scripts that are run as a subprocess
+# and whose output is later passed by a different program
+
+export PIPENV_VERBOSITY=-1
+
+# Run pipenv with the provided arguments
+pipenv "$@"

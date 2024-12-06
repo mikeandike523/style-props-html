@@ -1,0 +1,5 @@
+#!/bin/bash
+
+script_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+
+"$script_dir/__pipenv" run pylint "$@"

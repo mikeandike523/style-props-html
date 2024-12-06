@@ -1,0 +1,113 @@
+tag         element_type               is_void_element     special_attributes_type
+
+a           HTMLAnchorElement          false               AnchorHTMLAttributes
+abbr        HTMLElement                false               
+address     HTMLElement                false               
+area        HTMLAreaElement            true                AreaHTMLAttributes
+article     HTMLElement                false               
+aside       HTMLElement                false               
+audio       HTMLAudioElement           false               AudioHTMLAttributes
+b           HTMLElement                false               
+base        HTMLBaseElement            true                BaseHTMLAttributes
+bdi         HTMLElement                false               
+bdo         HTMLElement                false               
+blockquote  HTMLQuoteElement           false               BlockquoteHTMLAttributes
+body        HTMLBodyElement            false               
+br          HTMLBRElement              true                
+button      HTMLButtonElement          false               ButtonHTMLAttributes
+canvas      HTMLCanvasElement          false               CanvasHTMLAttributes
+caption     HTMLTableCaptionElement    false               
+cite        HTMLElement                false               
+code        HTMLElement                false               
+col         HTMLTableColElement        true                ColHTMLAttributes
+colgroup    HTMLTableColElement        false               ColgroupHTMLAttributes
+data        HTMLDataElement            false               DataHTMLAttributes
+datalist    HTMLDataListElement        false
+dd          HTMLElement                false               
+del         HTMLModElement             false               DelHTMLAttributes
+details     HTMLDetailsElement         false               DetailsHTMLAttributes
+dfn         HTMLElement                false               
+dialog      HTMLDialogElement          false               DialogHTMLAttributes
+div         HTMLDivElement             false               
+dl          HTMLDListElement           false               
+dt          HTMLElement                false               
+em          HTMLElement                false               
+embed       HTMLEmbedElement           true                EmbedHTMLAttributes
+fieldset    HTMLFieldSetElement        false               FieldsetHTMLAttributes
+figcaption  HTMLElement                false               
+figure      HTMLElement                false               
+footer      HTMLElement                false               
+form        HTMLFormElement            false               FormHTMLAttributes
+h1          HTMLHeadingElement         false               
+h2          HTMLHeadingElement         false               
+h3          HTMLHeadingElement         false               
+h4          HTMLHeadingElement         false               
+h5          HTMLHeadingElement         false               
+h6          HTMLHeadingElement         false               
+head        HTMLHeadElement            false               
+header      HTMLElement                false               
+hr          HTMLHRElement              true                
+html        HTMLHtmlElement            false               
+i           HTMLElement                false               
+iframe      HTMLIFrameElement          false               IframeHTMLAttributes
+img         HTMLImageElement           true                ImgHTMLAttributes
+input       HTMLInputElement           true                InputHTMLAttributes
+ins         HTMLModElement             false               InsHTMLAttributes
+kbd         HTMLElement                false               
+label       HTMLLabelElement           false               LabelHTMLAttributes
+legend      HTMLLegendElement          false               
+li          HTMLLIElement              false               
+link        HTMLLinkElement            true                LinkHTMLAttributes
+main        HTMLElement                false               
+map         HTMLMapElement             false               MapHTMLAttributes
+mark        HTMLElement                false               
+menu        HTMLMenuElement            false               MenuHTMLAttributes
+meta        HTMLMetaElement            true                MetaHTMLAttributes
+meter       HTMLMeterElement           false               MeterHTMLAttributes
+nav         HTMLElement                false               
+noscript    HTMLElement                false               
+object      HTMLObjectElement          false               ObjectHTMLAttributes
+ol          HTMLOListElement           false               
+optgroup    HTMLOptGroupElement        false               OptgroupHTMLAttributes
+option      HTMLOptionElement          false               OptionHTMLAttributes
+output      HTMLOutputElement          false               OutputHTMLAttributes
+p           HTMLParagraphElement       false               
+param       HTMLParamElement           true                ParamHTMLAttributes
+picture     HTMLElement                false               
+pre         HTMLPreElement             false               
+progress    HTMLProgressElement        false               ProgressHTMLAttributes
+q           HTMLQuoteElement           false               QuoteHTMLAttributes
+rp          HTMLElement                false               
+rt          HTMLElement                false               
+ruby        HTMLElement                false               
+s           HTMLElement                false               
+samp        HTMLElement                false               
+script      HTMLScriptElement          false               ScriptHTMLAttributes
+section     HTMLElement                false               
+select      HTMLSelectElement          false               SelectHTMLAttributes
+slot        HTMLSlotElement            false               
+small       HTMLElement                false               
+source      HTMLSourceElement          true                SourceHTMLAttributes
+span        HTMLSpanElement            false               
+strong      HTMLElement                false               
+style       HTMLStyleElement           false               StyleHTMLAttributes
+sub         HTMLElement                false               
+summary     HTMLElement                false               
+sup         HTMLElement                false               
+table       HTMLTableElement           false               
+tbody       HTMLTableSectionElement    false               
+td          HTMLTableCellElement       false               
+template    HTMLTemplateElement        false               
+textarea    HTMLTextAreaElement        false               TextareaHTMLAttributes
+tfoot       HTMLTableSectionElement    false               
+th          HTMLTableCellElement       false               
+thead       HTMLTableSectionElement    false               
+time        HTMLTimeElement            false               
+title       HTMLTitleElement           false               
+tr          HTMLTableRowElement        false               
+track       HTMLTrackElement           true                TrackHTMLAttributes
+u           HTMLElement                false               
+ul          HTMLUListElement           false               
+var         HTMLElement                false               
+video       HTMLVideoElement           false               VideoHTMLAttributes
+wbr         HTMLElement                true                

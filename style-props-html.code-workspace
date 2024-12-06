@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.detectIndentation": false,
+      "editor.tabSize": 4,
+      "editor.rulers": [88],
+      "editor.wordWrap": "wordWrapColumn",
+      "editor.wordWrapColumn": 88
+    },
+    "python.pipenvPath": "${workspaceFolder}/.venv/bin/pipenv",
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
+    "python.terminal.activateEnvInCurrentTerminal": false,
+    "python.terminal.activateEnvironment": false,
+    "pylint.path": ["${workspaceFolder}/.venv/bin/pylint"],
+    "pylint.interpreter": ["${workspaceFolder}/.venv/bin/python3"],
+    "python.analysis.extraPaths": ["${workspaceFolder}"]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.black-formatter",
+      "ms-python.flake8",
+      "ms-python.isort",
+      "ms-python.vscode-pylance",
+      "ms-python.pylint",
+      "ms-python.python",
+      "ms-python.debugpy",
+      "streetsidesoftware.code-spell-checker"
+    ]
+  }
+}
