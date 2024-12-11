@@ -1,0 +1,17 @@
+node_modules
+.vscode
+.venv
+__pipenv
+__pylint
+__python
+.flake8
+.gitignore
+.npmignore
+.pyintrc
+cspell.json
+index.ts
+Pipfile
+Pipfile.lock
+style-props-html.code-workspace
+pnpm-lock.yaml
+tsconfig.json
