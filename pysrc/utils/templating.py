@@ -12,12 +12,16 @@ class TemplateMode:
         """
         Initialize a TemplateMode object.
 
-        This constructor sets up the template mode with a specified kind and optional custom delimiters.
+        This constructor sets up the template mode with a specified kind
+        and optional custom delimiters.
 
         Parameters:
-        kind (TemplateModeKind): The kind of template mode (e.g., PYTHON_STYLE or CUSTOM).
-        custom_start (str, optional): The starting delimiter for custom template fields. Defaults to "<<".
-        custom_end (str, optional): The ending delimiter for custom template fields. Defaults to ">>".
+        kind (TemplateModeKind): The kind of template mode (e.g., PYTHON_STYLE
+        or CUSTOM).
+        custom_start (str, optional): The starting delimiter for custom template fields.
+        Defaults to "<<".
+        custom_end (str, optional): The ending delimiter for custom template fields.
+        Defaults to ">>".
 
         Returns:
         None
@@ -38,10 +42,12 @@ class Template:
         """
         Initialize a Template object.
 
-        This constructor sets up the Template with a specified mode and initializes the template text.
+        This constructor sets up the Template with a specified mode
+        and initializes the template text.
 
         Parameters:
-        mode (TemplateMode): The mode for template rendering. Defaults to a custom mode with "<<" and ">>" as delimiters.
+        mode (TemplateMode): The mode for template rendering.
+        Defaults to a custom mode with "<<" and ">>" as delimiters.
 
         Returns:
         None
@@ -63,7 +69,8 @@ class Template:
         **kwargs: Arbitrary keyword arguments for named placeholders.
 
         Returns:
-        str: The rendered template with all placeholders replaced by their corresponding values.
+        str: The rendered template with all placeholders
+        replaced by their corresponding values.
         """
         return template_text.format(*args, **kwargs)
 
@@ -123,7 +130,8 @@ class Template:
         """
         Set the template text from a string.
 
-        This method sets the template text for the Template object using the provided string.
+        This method sets the template text for the Template object
+        using the provided string.
 
         Parameters:
         template_text (str): The string containing the template text to be set.
@@ -168,10 +176,12 @@ class Template:
                   Used in both Python-style and custom formatting.
 
         Returns:
-        str: The rendered template with all placeholders replaced by their corresponding values.
+        str: The rendered template with all placeholders
+        replaced by their corresponding values.
 
         Raises:
-        ValueError: If no template text has been set or if an unsupported template mode is specified.
+        ValueError: If no template text has been set
+        or if an unsupported template mode is specified.
         """
         if self.template_text is None:
             raise ValueError("No template text has been set.")

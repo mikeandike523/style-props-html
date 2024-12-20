@@ -6,19 +6,47 @@ for the general structure of the generated files
 """
 
 import os
+import re
 
 from html_react_ecosystem_specs import html_element_specs
 from pysrc.utils.justified_table import read_justified_table_into_dataframe
+from pysrc.utils.templating import Template, TemplateMode, TemplateModeKind
 
 os.chdir(os.path.dirname(__file__))
 
 
 css_property_map = read_justified_table_into_dataframe("css_property_map.txt")
 
-print(css_property_map.head())
-
-
 special_cases = read_justified_table_into_dataframe("special_cases.txt")
+
+cssPropertyMapTsTemplate = Template(
+    TemplateMode(TemplateModeKind.CUSTOM, "<<", ">>")
+).from_file("templates/file/cssPropertyMap.ts.txt")
+
+
+css_property_map_records = css_property_map.to_dict(orient="records")
+special_cases_records = special_cases.to_dict(orient="records")
+
+for record in css_property_map_records:
+    if any([value is None for value in record.values()]):
+        print(record)
+
+css_property_map_records = [
+    {
+        "name": record["name"],
+        "values": re.split(r"\s+", record["values"]),
+    }
+    for record in css_property_map_records
+]
+
+
+special_cases_records = [
+    {
+        "element": record["element"].strip("<>"),
+        "attributes": re.split(r"\s+", record["attributes"]),
+    }
+    for record in special_cases_records
+]
 
 
 HTML_TAG_DATA_TS_TEMPLATE = """

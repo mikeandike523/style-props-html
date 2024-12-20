@@ -1,0 +1,17 @@
+export const cssPropertyMap = {
+    <<CSS_PROPERTY_MAP>>
+} as const;
+
+type MapValues<T extends readonly any[]> = T[number] extends infer U
+  ? U extends "string"
+    ? string
+    : U extends "number"
+    ? number
+    : U
+  : never;
+
+export type CSSPropertyMap = {
+  [K in keyof typeof cssPropertyMap]: MapValues<(typeof cssPropertyMap)[K]>;
+};
+
+export default cssPropertyMap;
