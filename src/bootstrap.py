@@ -12,9 +12,14 @@ from pysrc.utils.justified_table import read_justified_table_into_dataframe
 
 os.chdir(os.path.dirname(__file__))
 
+
+css_property_map = read_justified_table_into_dataframe("css_property_map.txt")
+
+print(css_property_map.head())
+
+
 special_cases = read_justified_table_into_dataframe("special_cases.txt")
 
-print(special_cases)
 
 HTML_TAG_DATA_TS_TEMPLATE = """
 export const nonVoidTags = [

@@ -9,7 +9,7 @@ import {
 import { kebabCase } from "lodash";
 import { css as emotionCss } from "@emotion/css";
 
-import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
+import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap.old";
 import { allTags, voidTags } from "./htmlTagData";
 
 /**
