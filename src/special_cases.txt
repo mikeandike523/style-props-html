@@ -1,0 +1,25 @@
+HTML Element         Conflicting HTML Attribute     Conflicting CSS Property      
+<canvas>             width, height                  width, height                 
+<img>                width, height                  width, height                 
+<iframe>             width, height                  width, height                 
+<video>              width, height                  width, height                 
+<audio>              volume                         volume                        
+<table>              border                         border                        
+<table>              width, height                  width, height                 
+<td>, <th>           width, height                  width, height                 
+<svg>                width, height                  width, height                 
+<svg>                x, y                           x, y                          
+<input>              width, height                  width, height                 
+<input>              size                           size                          
+<textarea>           cols, rows                     grid-column, grid-row         
+<meter>              min, max                       min, max                      
+<progress>           max, value                     max, value                    
+<form>               method                         method                        
+<details>            open                           open                          
+<object>             width, height                  width, height                 
+<embed>              width, height                  width, height                 
+<body>               background                     background                    
+<font>               size                           size                          
+<marquee>            direction                      direction                     
+<hr>                 size                           size                          
+<ol>                 start                          start

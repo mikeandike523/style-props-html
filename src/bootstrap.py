@@ -8,8 +8,13 @@ for the general structure of the generated files
 import os
 
 from html_react_ecosystem_specs import html_element_specs
+from pysrc.utils.justified_table import read_justified_table_into_dataframe
 
 os.chdir(os.path.dirname(__file__))
+
+special_cases = read_justified_table_into_dataframe("special_cases.txt")
+
+print(special_cases)
 
 HTML_TAG_DATA_TS_TEMPLATE = """
 export const nonVoidTags = [
