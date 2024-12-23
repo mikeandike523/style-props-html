@@ -1,5 +1,5 @@
 export const cssPropertyMap = {
-    <<CSS_PROPERTY_MAP>>
+<<CSS_PROPERTY_MAP>>
 } as const;
 
 type MapValues<T extends readonly any[]> = T[number] extends infer U

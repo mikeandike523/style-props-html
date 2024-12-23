@@ -195,3 +195,41 @@ class Template:
             )
         else:
             raise ValueError("Unsupported template mode")
+        
+    def render_save(self, file_path: str, *args, **kwargs) -> None:
+        """
+        Render the template and save the result to a file.
+
+        This method renders the template with the provided arguments and saves the
+        result to a file.
+
+        Parameters:
+        file_path (str): The path to the file where the rendered template will be saved.
+        *args: Variable length argument list for positional arguments.
+               Used only in Python-style formatting.
+        **kwargs: Arbitrary keyword arguments.
+                  Used in both Python-style and custom formatting.
+
+        Returns:
+        None
+
+        Raises:
+        ValueError: If no template text has been set
+        or if an unsupported template mode is specified.
+        """
+        if self.template_text is None:
+            raise ValueError("No template text has been set.")
+        if self.mode.kind == TemplateModeKind.PYTHON_STYLE:
+            rendered_text = Template.render_python_style_template(
+                self.template_text, *args, **kwargs
+            )
+        elif self.mode.kind == TemplateModeKind.CUSTOM:
+            rendered_text = Template.render_custom_template(
+                self.mode, self.template_text, **kwargs
+            )
+        else:
+            raise ValueError("Unsupported template mode")
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(rendered_text)
+

@@ -1,24 +1,6 @@
-element              attributes      
-<canvas>             width height                    
-<img>                width height                    
-<iframe>             width height                    
-<video>              width height                    
-<audio>              volume                           
-<table>              border                           
-<table>              width height                    
-<td>, <th>           width height                    
-<svg>                width height                    
-<svg>                x, y                             
-<input>              width height                    
-<input>              size                             
-<meter>              min max                         
-<progress>           max value                       
-<form>               method                           
-<details>            open                             
-<object>             width height                    
-<embed>              width height                    
-<body>               background                       
-<font>               size                             
-<marquee>            direction                        
-<hr>                 size                             
-<ol>                 start                     
+element               attributes     
+<canvas>              width height     
+<img>                 width height     
+<iframe>              width height     
+<video>               width height     
+<svg>                 width height

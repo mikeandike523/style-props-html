@@ -7,6 +7,9 @@ for the general structure of the generated files
 
 import os
 import re
+from collections import defaultdict
+import json
+import copy
 
 from html_react_ecosystem_specs import html_element_specs
 from pysrc.utils.justified_table import read_justified_table_into_dataframe
@@ -48,6 +51,42 @@ special_cases_records = [
     for record in special_cases_records
 ]
 
+all_css_property_map = defaultdict(list)
+
+for record in css_property_map_records:
+    name = record["name"]
+    values = record["values"]
+    for value in values:
+        all_css_property_map[name].append(value)
+
+for record in special_cases_records:
+    for attribute in record["attributes"]:
+        if attribute not in all_css_property_map:
+            raise ValueError(f"Invalid attribute: {attribute}")
+        possible_values = copy.copy(all_css_property_map[attribute])
+        modified_name = f"css{attribute.capitalize()}"
+        all_css_property_map[modified_name] = possible_values
+
+css_property_map_lines=[]
+
+for css_attribute_name, possible_values in all_css_property_map.items():
+    css_property_map_lines .append( f"  {css_attribute_name}: [{", ".join(map(lambda x: f"\"{x}\"",possible_values))}],")
+
+Template().from_file("templates/file/cssPropertyMap.ts.txt").render_save("cssPropertyMap.ts",CSS_PROPERTY_MAP="\n".join(css_property_map_lines))
+
+all_special_elements = set([special_case["element"] for special_case in special_cases_records])
+
+special_case_map = defaultdict(list)
+
+for record in special_cases_records:
+    element = record["element"]
+    attributes = record["attributes"]
+    special_case_map[element].extend(attributes)
+
+Template().from_file("templates/file/special-cases.ts.txt").render_save("special-cases.ts", SPECIAL_CASES=json.dumps(
+    special_case_map,indent=2
+))
+
 
 HTML_TAG_DATA_TS_TEMPLATE = """
 export const nonVoidTags = [
@@ -85,13 +124,12 @@ STYLE_PROPS_HTML_COMPONENT_TEMPLATE = """
 export type {props_name} = StylePropsComponentProps<{element_type}>
 {opt_special_attributes_text};
 
-export const {component_name} = React.forwardRef<{element_type} | null,
+export const {component_name} = React.forwardRef<{element_type},
 {props_name}>(function {component_name}(props, ref){{
 
 
     return <StylePropsComponent tag="{tag}" ref={{
-        ref as
-        undefined | React.ForwardedRef<HTMLElement | null>
+        ref as React.ForwardedRef<HTMLElement>
         }} {{...props}}/>;
 
 }});

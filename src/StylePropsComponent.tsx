@@ -5,12 +5,15 @@ import {
   RefAttributes,
   HTMLAttributes,
   ForwardedRef,
+  AriaAttributes,
+  DOMAttributes,
 } from "react";
 import { kebabCase } from "lodash";
 import { css as emotionCss } from "@emotion/css";
 
 import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap.old";
 import { allTags, voidTags } from "./htmlTagData";
+import { specialCaseList, specialCaseMap } from "./special-cases";
 
 /**
  * Cached list of valid CSS property names
@@ -26,18 +29,6 @@ const cssPropertyNames = Object.keys(cssPropertyMap);
 function makeInclusionChecker<T>(array: T[]) {
   const asSet = new Set<T>(array);
   return (value: T) => asSet.has(value);
-}
-
-/**
- * Checks if a given set is a valid subset of another set
- */
-function isSubset(subset: Set<string>, superset: Set<string>) {
-  for (const elem of subset) {
-    if (!superset.has(elem)) {
-      return false;
-    }
-  }
-  return true;
 }
 
 export type StylePropsCollection = {
@@ -64,7 +55,7 @@ const cssPropertyNamesIC = makeInclusionChecker(cssPropertyNames);
 export type StylePropsComponentProps<T extends HTMLElement> =
   HTMLAttributes<T> &
     RefAttributes<T> & {
-      ref?: ForwardedRef<T | null>;
+      ref?: ForwardedRef<T>;
       children?: ReactNode | ReactNode[];
       className?: string;
     } & {
@@ -72,7 +63,7 @@ export type StylePropsComponentProps<T extends HTMLElement> =
     };
 
 export default forwardRef<
-  HTMLElement | null,
+  HTMLElement,
   StylePropsComponentProps<HTMLElement> & {
     tag: AllowedTag;
   }
@@ -107,13 +98,43 @@ export default forwardRef<
   }
   const restPropsStyleProps = {} as any;
   const restPropsRegularProps = {} as any;
-  for (const [propName, propValue] of Object.entries(rest)) {
-    if (cssPropertyNamesIC(propName)) {
-      restPropsStyleProps[propName] = propValue;
-    } else {
-      restPropsRegularProps[propName] = propValue;
+
+  if (!specialCaseList.includes(tag as (typeof specialCaseList)[number])) {
+    for (const [propName, propValue] of Object.entries(rest)) {
+      if (cssPropertyNamesIC(propName)) {
+        restPropsStyleProps[propName] = propValue;
+      } else {
+        restPropsRegularProps[propName] = propValue;
+      }
+    }
+  } else {
+    const specialCaseAttributeList =
+      specialCaseMap[tag as keyof typeof specialCaseMap];
+    for (const [propName, propValue] of Object.entries(rest)) {
+      if (cssPropertyNamesIC(propName)) {
+        if (
+          specialCaseAttributeList.includes(
+            propName as (typeof specialCaseAttributeList)[number]
+          )
+        ) {
+          restPropsRegularProps[propName] = propValue;
+        } else {
+          restPropsStyleProps[propName] = propValue;
+        }
+      } else {
+        if (propName.startsWith("css") && propName !== "css") {
+          const withoutCssPrefix = propName.replace(/^css/, "");
+          const uncapitalized =
+            withoutCssPrefix.charAt(0).toLowerCase() +
+            withoutCssPrefix.slice(1);
+          restPropsStyleProps[uncapitalized] = propValue;
+        } else {
+          restPropsRegularProps[propName] = propValue;
+        }
+      }
     }
   }
+
   const stylePropsString = `\n\n${Object.entries(restPropsStyleProps)
     .map(([key, value]) => {
       if (!cssPropertyNamesIC(key)) {

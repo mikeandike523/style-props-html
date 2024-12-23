@@ -1,19 +1,19 @@
 import { ReactNode, RefAttributes, HTMLAttributes, ForwardedRef } from "react";
-import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
+import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap.old";
 import { allTags } from "./htmlTagData";
 export type StylePropsCollection = {
     [P in keyof typeof cssPropertyMap]: (typeof cssPropertyMap)[P];
 };
 export type AllowedTag = (typeof allTags)[number];
 export type StylePropsComponentProps<T extends HTMLElement> = HTMLAttributes<T> & RefAttributes<T> & {
-    ref?: ForwardedRef<T | null>;
+    ref?: ForwardedRef<T>;
     children?: ReactNode | ReactNode[];
     className?: string;
 } & {
     [K in keyof CSSPropertyMap]?: CSSPropertyMap[K];
 };
 declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttributes<HTMLElement> & RefAttributes<HTMLElement> & {
-    ref?: ForwardedRef<HTMLElement | null> | undefined;
+    ref?: ForwardedRef<HTMLElement> | undefined;
     children?: ReactNode | ReactNode[];
     className?: string;
 } & {
@@ -147,5 +147,5 @@ declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttri
     readonly aspectRatio?: number | undefined;
 } & {
     tag: AllowedTag;
-}, "ref"> & RefAttributes<HTMLElement | null>>;
+}, "ref"> & RefAttributes<HTMLElement>>;
 export default _default;

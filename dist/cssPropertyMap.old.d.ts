@@ -86,7 +86,7 @@ export declare const cssPropertyMap: {
     readonly gridGap: readonly ["string"];
     readonly gridAutoRows: readonly ["string"];
     readonly gridAutoColumns: readonly ["string"];
-    readonly gridAutoFlow: readonly ["row", "column", "dense", "row", "dense", "column", "dense", "inherit", "initial", "unset"];
+    readonly gridAutoFlow: readonly ["row", "column", "dense", "row dense", "column dense", "inherit", "initial", "unset"];
     readonly gridArea: readonly ["string"];
     readonly gridColumnStart: readonly ["string", "number"];
     readonly gridColumnEnd: readonly ["string", "number"];
@@ -127,8 +127,6 @@ export declare const cssPropertyMap: {
     readonly pointerEvents: readonly ["auto", "none", "visiblePainted", "visibleFill", "visibleStroke", "visible", "painted", "fill", "stroke", "all", "inherit", "initial", "unset"];
     readonly content: readonly ["string"];
     readonly aspectRatio: readonly ["number"];
-    readonly cssWidth: readonly ["string", "number", "auto", "inherit", "initial", "unset", "max-content", "min-content", "fit-content"];
-    readonly cssHeight: readonly ["string", "number", "auto", "inherit", "initial", "unset", "max-content", "min-content", "fit-content"];
 };
 type MapValues<T extends readonly any[]> = T[number] extends infer U ? U extends "string" ? string : U extends "number" ? number : U : never;
 export type CSSPropertyMap = {
