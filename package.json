@@ -1,6 +1,6 @@
 {
   "name": "style-props-html",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,8 +8,13 @@
     "compile": "./node_modules/.bin/tsc",
     "bootstrap": "./__python src/bootstrap.py"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "style-props",
+    "html",
+    "emotion",
+    "react"
+  ],
+  "author": "Michael Sohnen",
   "license": "LICENSE",
   "devDependencies": {
     "typescript": "^5.7.2"

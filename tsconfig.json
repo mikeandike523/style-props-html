@@ -17,7 +17,9 @@
     "declaration": true,
     "strictNullChecks": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react"
+    "jsxImportSource": "@emotion/react",
+    "removeComments": false,
+    "sourceMap": true
   },
   "include": ["src"]
 }

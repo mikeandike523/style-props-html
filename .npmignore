@@ -15,3 +15,7 @@ Pipfile.lock
 style-props-html.code-workspace
 pnpm-lock.yaml
 tsconfig.json
+pysrc
+**/*.py
+**/*.txt
+**/__pycache__
