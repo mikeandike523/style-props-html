@@ -110,7 +110,7 @@ In your project it may also be useful to perform your own ref-forwarding to exte
 
 ### Example -- AspectSensitiveCanvas
 
-** ! WARNING ! **
+**! WARNING !**
 This code was generate by ChatGPT and is not yet tested. I plan to test it soon. Use this example only as a demonstration of ideas.
 
 ```ts
