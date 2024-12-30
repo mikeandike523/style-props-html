@@ -1,10 +1,19 @@
 import { ReactNode, RefAttributes, HTMLAttributes, ForwardedRef } from "react";
 import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags } from "./htmlTagData";
+/**
+ * An object representing a collection of all style props that can be present on a component.
+ */
 export type StylePropsCollection = {
     [P in keyof typeof cssPropertyMap]: (typeof cssPropertyMap)[P];
 };
+/**
+ * A union of string literal types where each string literal represents a valid HTML tag.
+ */
 export type AllowedTag = (typeof allTags)[number];
+/**
+ * The props present on a style props component.
+ */
 export type StylePropsComponentProps<T extends HTMLElement> = HTMLAttributes<T> & RefAttributes<T> & {
     ref?: ForwardedRef<T>;
     children?: ReactNode | ReactNode[];
@@ -12,6 +21,14 @@ export type StylePropsComponentProps<T extends HTMLElement> = HTMLAttributes<T> 
 } & {
     [K in keyof CSSPropertyMap]?: CSSPropertyMap[K];
 };
+/**
+ * The style props component
+ *
+ * Supports ref forwarding, so each component behaves identical to their plain HTML counterpart
+ * with regards to React's ref system.
+ *
+ * Note: The user of this library should never use this component directly.
+ */
 declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttributes<HTMLElement> & RefAttributes<HTMLElement> & {
     ref?: ForwardedRef<HTMLElement> | undefined;
     children?: ReactNode | ReactNode[];
@@ -148,6 +165,9 @@ declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttri
     readonly cssWidth?: string | number | undefined;
     readonly cssHeight?: string | number | undefined;
 } & {
+    /**
+     * The html tag to use in `createElement`
+     */
     tag: AllowedTag;
 }, "ref"> & RefAttributes<HTMLElement>>;
 export default _default;

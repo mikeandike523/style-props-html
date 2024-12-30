@@ -17,7 +17,18 @@ For instance,
 
 ## Compatibility
 
-This library is Typescript and Javascript compatible. Of course, I recommend Typescript.
+### Languages
+
+This library is Typescript and Javascript compatible.
+
+### Other Styling Systems
+
+This library is fully compatible with other
+styling systems. The JSX `className` is fully preserved as well as the `css` prop if your project uses `@emotion/react`. This library compiles all of your style props into a single Emotion CSS `SerializedStyles` object and places it last in the class list for the final rendered element.
+
+### Styling Priority
+
+Because the compiled `SerializedStyles` is placed last in the HTML classList for the rendered element, this means that your style prop values will attempt to override other stylings such as custom classes or Emotion CSS. This is intentional, as I believe this would be the expected behavior of style props. If you disagree, raise a github issue or see the contribution section!
 
 ## Basic Example
 
@@ -66,18 +77,6 @@ export default function HomePage(){
 }
 
 ```
-
-## Full Compatibility With Other Styling Methods
-
-This library is fully compatible with inline styles, CSS class names, and the Emotion CSS `css` prop. If the same CSS property is present in the `css` prop and the style props, the style props will override. Under the hood, it is string concatenation. The style props are assembled into an Emotion `SerializedStyles` object and concatenated to the existing css prop, potentially leading to duplicate properties. However n CSS, a repeated property below will override one above. Nevertheless is is not good practice to duplicate a property between style props and the `css` prop.
-
-JSX `className` (CSS classes) and `style` props (inline styles) are unaffected, allowing inline styles and libraries such as Tailwind to be used as normal.
-
-## Known Issue -- Incompatible With Chakra UI
-
-It may depend on your specific project setup, but there is a known compatibility issue in the `css` prop when attempting to use this library in conjunction Chakra UI. One tends to get error `union is too complex to represent`. I believe this is due to complexity of how Chakra UI manages its internal usage of the `@emotion/react` library as well as its internal implementation of its style props system and `as` prop.
-
-Generally, there is really no reason to use this library in conjunction with Chakra UI. Chakra UI has its own built in style prop and theming systems. The purpose of this library is to provide an alternative that is more lightweight and does not come with any opinionated components, styles, or theming behavior.
 
 ## Ref-Forwarding and Higher Order Components
 
