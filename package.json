@@ -1,6 +1,6 @@
 {
   "name": "style-props-html",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A library that facilitates passing CSS styles as regular props using a collection of custom components that mirror traditional DOM elements.",
   "exports": {
     "main": "./dist/cjs/index.js",
@@ -13,12 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mikeandike523/style-props-html.git"
+    "url": "git+https://github.com/mikeandike523/style-props-html.git"
   },
   "scripts": {
-    "typecheck": "./node_modules/.bin/tsc --noEmit",
-    "build:cjs": "./node_modules/.bin/tsc --project tsconfig.cjs.json",
-    "build:esm": "./node_modules/.bin/tsc --project tsconfig.esm.json",
+    "typecheck": "tsc --noEmit",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
     "build": "npm run build:cjs && npm run build:esm",
     "bootstrap": "./__python src/bootstrap.py"
   },
