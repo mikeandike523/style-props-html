@@ -21,3 +21,4 @@ export const specialCaseMap = {
     ]
 };
 export const specialCaseList = Object.keys(specialCaseMap);
+//# sourceMappingURL=special-cases.js.map

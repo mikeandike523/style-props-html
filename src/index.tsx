@@ -927,11 +927,11 @@ NoscriptProps>(function Noscript(props, ref){
 });
 
 
-export type ObjectProps = StylePropsComponentProps<HTMLObjectElement>
+export type SPHObjectProps = StylePropsComponentProps<HTMLObjectElement>
  & React.ObjectHTMLAttributes<HTMLObjectElement>;
 
-export const Object = React.forwardRef<HTMLObjectElement,
-ObjectProps>(function Object(props, ref){
+export const SPHObject = React.forwardRef<HTMLObjectElement,
+SPHObjectProps>(function SPHObject(props, ref){
 
 
     return <StylePropsComponent tag="object" ref={

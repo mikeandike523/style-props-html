@@ -67,29 +67,6 @@ export default function HomePage(){
 
 ```
 
-## Emotion React `css` Prop Requirement
-
-This library relies on the use of `@emotion/react` and it's `css` prop.
-
-To enable the css prop, your project
-needs to use `@emotion/react` as it's `jsxImportSource`. This is because the `css` prop is not present by default in plain JSX or React.
-
-In Typescript projects, this is is as easy as including the `jsxImportSource` in your tsconfig settings.
-
-```json
-{
-  "compilerOptions": {
-    "jsxImportSource": "@emotion/react"
-  }
-}
-```
-
-Most bundlers (such as vite and nextjs) will automatically detect this settings and handle the `css` prop appropriately.
-
-However if you have a Javascript project, you may need to directly configure the compiler or bundler settings to modify `jsxImportSource`. In all cases, consider adding a `.tsconfig` or `.jsconfig` to your Javascript projects to assist with autocomplete and suggestions in your IDE.
-
-_Note: This may change as an improvement in future versions. However the work required to implement a system independent of the `css` prop is excessive at this time._
-
 ## Full Compatibility With Other Styling Methods
 
 This library is fully compatible with inline styles, CSS class names, and the Emotion CSS `css` prop. If the same CSS property is present in the `css` prop and the style props, the style props will override. Under the hood, it is string concatenation. The style props are assembled into an Emotion `SerializedStyles` object and concatenated to the existing css prop, potentially leading to duplicate properties. However n CSS, a repeated property below will override one above. Nevertheless is is not good practice to duplicate a property between style props and the `css` prop.
@@ -230,6 +207,22 @@ export default AspectSensitiveCanvas;
 ```
 
 ## Special Cases
+
+### Conflict between PascalCase and Javascript Syntax
+
+In rare cases, if the name of the PascalCase version of an html tag is reserved or can cause a conflict in JS,
+then we add "SPH" in front. So far, only one case has been identified.
+
+```ts
+import { SPHObject } from "style-props-html";
+```
+
+The PascalCase of "object" (html `<object>` tag) would be "Object", but this conflicts with Javascript's
+global `Object`. So we put "SPH" in front.
+
+`SPHObject` means "Style Props HTML Object"
+
+### Conflicting HTML Attributes and CSS Properties
 
 Notice in the previous example the use of `cssWidth` and `cssHeight`? This is a special case. Some HTML elements have meaningful attributes that conflict with css attributes. For the sake of JSX integrity, in these cases the html attribute is prioritized and you can provide style props by prefacing with `css`. For instance `cssWidth` or `cssHeight`.
 

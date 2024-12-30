@@ -1,4 +1,7 @@
-export const cssPropertyMap = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.cssPropertyMap = void 0;
+exports.cssPropertyMap = {
     objectFit: ["cover", "contain", "none", "inherit", "initial", "unset", "fill"],
     whiteSpace: ["normal", "nowrap", "pre", "pre-wrap", "pre-line"],
     color: ["string", "inherit", "initial", "unset", "transparent"],
@@ -130,4 +133,5 @@ export const cssPropertyMap = {
     cssWidth: ["string", "number", "auto", "inherit", "initial", "unset", "max-content", "min-content", "fit-content"],
     cssHeight: ["string", "number", "auto", "inherit", "initial", "unset", "max-content", "min-content", "fit-content"],
 };
-export default cssPropertyMap;
+exports.default = exports.cssPropertyMap;
+//# sourceMappingURL=cssPropertyMap.js.map

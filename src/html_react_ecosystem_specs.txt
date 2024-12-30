@@ -66,7 +66,7 @@ meta        HTMLMetaElement            true                MetaHTMLAttributes
 meter       HTMLMeterElement           false               MeterHTMLAttributes
 nav         HTMLElement                false               
 noscript    HTMLElement                false               
-object      HTMLObjectElement          false               ObjectHTMLAttributes
+!object     HTMLObjectElement          false               ObjectHTMLAttributes
 ol          HTMLOListElement           false               
 optgroup    HTMLOptGroupElement        false               OptgroupHTMLAttributes
 option      HTMLOptionElement          false               OptionHTMLAttributes

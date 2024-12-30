@@ -1,5 +1,5 @@
 import { ReactNode, RefAttributes, HTMLAttributes, ForwardedRef } from "react";
-import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap.old";
+import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags } from "./htmlTagData";
 export type StylePropsCollection = {
     [P in keyof typeof cssPropertyMap]: (typeof cssPropertyMap)[P];
@@ -104,7 +104,7 @@ declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttri
     readonly gridGap?: string | undefined;
     readonly gridAutoRows?: string | undefined;
     readonly gridAutoColumns?: string | undefined;
-    readonly gridAutoFlow?: "inherit" | "initial" | "unset" | "row" | "column" | "dense" | "row dense" | "column dense" | undefined;
+    readonly gridAutoFlow?: "inherit" | "initial" | "unset" | "row" | "column" | "dense" | undefined;
     readonly gridArea?: string | undefined;
     readonly gridColumnStart?: string | number | undefined;
     readonly gridColumnEnd?: string | number | undefined;
@@ -145,6 +145,8 @@ declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttri
     readonly pointerEvents?: "none" | "inherit" | "initial" | "unset" | "fill" | "visible" | "auto" | "all" | "visiblePainted" | "visibleFill" | "visibleStroke" | "painted" | "stroke" | undefined;
     readonly content?: string | undefined;
     readonly aspectRatio?: number | undefined;
+    readonly cssWidth?: string | number | undefined;
+    readonly cssHeight?: string | number | undefined;
 } & {
     tag: AllowedTag;
 }, "ref"> & RefAttributes<HTMLElement>>;

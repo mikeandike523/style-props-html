@@ -40,6 +40,12 @@ class HTMLElementSpec:
     (e.g., React.ButtonHTMLAttributes<HTMLButtonElement>).
     """
 
+    mangle: bool = False
+    """
+    For some special cases we need to insert SPH to prevent issues
+    Such as <object> becomes SPHObject instead of Object
+    """
+
 
 # It is organized to keep it in a csv file
 
@@ -87,10 +93,21 @@ def load_html_tags_from_table_file() -> dict[str, HTMLElementSpec]:
 
         line_number += 1
 
+
         for line in f:
+
+            mangle = False
+
+
             if line.strip() == "":
                 line_number += 1
                 continue
+            if line.startswith("#"):
+                line_number += 1
+                continue
+            if line.startswith("!"):
+                mangle = True
+                line = line[1:]
 
             # For our purposes we can safely assume that
             # no content has interior whitespace
@@ -117,6 +134,7 @@ def load_html_tags_from_table_file() -> dict[str, HTMLElementSpec]:
                 element_type=element_type,
                 is_void_element=is_void_element,
                 special_attributes_type=special_attributes_type,
+                mangle=mangle,  # Only for special cases, default to False for now
             )
 
             line_number += 1

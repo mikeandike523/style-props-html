@@ -5,13 +5,11 @@ import {
   RefAttributes,
   HTMLAttributes,
   ForwardedRef,
-  AriaAttributes,
-  DOMAttributes,
 } from "react";
 import { kebabCase } from "lodash";
 import { css as emotionCss } from "@emotion/css";
 
-import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap.old";
+import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags, voidTags } from "./htmlTagData";
 import { specialCaseList, specialCaseMap } from "./special-cases";
 

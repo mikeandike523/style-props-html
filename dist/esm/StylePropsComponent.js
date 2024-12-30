@@ -1,7 +1,18 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import { forwardRef, createElement, } from "react";
 import { kebabCase } from "lodash";
 import { css as emotionCss } from "@emotion/css";
-import cssPropertyMap from "./cssPropertyMap.old";
+import cssPropertyMap from "./cssPropertyMap";
 import { allTags, voidTags } from "./htmlTagData";
 import { specialCaseList, specialCaseMap } from "./special-cases";
 /**
@@ -32,24 +43,25 @@ const voidTagsIC = makeInclusionChecker([
  * A closure to check if a string is a CSS property name
  */
 const cssPropertyNamesIC = makeInclusionChecker(cssPropertyNames);
-export default forwardRef(function StylePropsComponent({ 
-/**
- * Children to be rendered within the component
- */
-children, 
-/**
- * The html tag to use in `createElement`
- */
-tag, 
-/**
- * EmotionCSS engine does NOT pass down css prop
- * The propagated emotion css data is actually captured in the `className` prop
- */
-className, ...rest }, 
+export default forwardRef(function StylePropsComponent(_a, 
 /**
  * A reference to an enhanced `ref` prop that enables ref forwarding
  */
 ref) {
+    var { 
+    /**
+     * Children to be rendered within the component
+     */
+    children, 
+    /**
+     * The html tag to use in `createElement`
+     */
+    tag, 
+    /**
+     * EmotionCSS engine does NOT pass down css prop
+     * The propagated emotion css data is actually captured in the `className` prop
+     */
+    className } = _a, rest = __rest(_a, ["children", "tag", "className"]);
     if (!allTagsIC(tag)) {
         throw new Error(`Invalid tag. Only \`${allTags.join(", ")}\` are allowed.`);
     }
@@ -106,17 +118,10 @@ ref) {
         ...existingClassNameList,
     ];
     if (voidTagsIC(tag)) {
-        return createElement(tag, {
-            ...restPropsRegularProps,
-            ref,
-            className: combinedClassNames.join(" "),
-        });
+        return createElement(tag, Object.assign(Object.assign({}, restPropsRegularProps), { ref, className: combinedClassNames.join(" ") }));
     }
     else {
-        return createElement(tag, {
-            ...restPropsRegularProps,
-            ref,
-            className: combinedClassNames.join(" "),
-        }, children);
+        return createElement(tag, Object.assign(Object.assign({}, restPropsRegularProps), { ref, className: combinedClassNames.join(" ") }), children);
     }
 });
+//# sourceMappingURL=StylePropsComponent.js.map

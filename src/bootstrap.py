@@ -140,6 +140,8 @@ style_props_html_file_text = ""
 
 for tag, spec in html_element_specs.items():
     component_name = f"{tag[0].upper()}{(tag[1:])}"
+    if spec.mangle:
+        component_name = "SPH"+component_name
     props_name = f"{component_name}Props"
     element_type = spec.element_type
     opt_special_attributes_text = (

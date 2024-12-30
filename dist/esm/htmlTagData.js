@@ -114,3 +114,4 @@ export const voidTags = [
     "wbr",
 ];
 export const allTags = [...nonVoidTags, ...voidTags];
+//# sourceMappingURL=htmlTagData.js.map
