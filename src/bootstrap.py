@@ -114,7 +114,7 @@ with open("htmlTagData.ts", "w", encoding="utf-8") as f:
 
 
 STYLE_PROPS_HTML_TSX_TEMPLATE = """
-import React from 'react';
+import * as React from 'react';
 import StylePropsComponent, {{StylePropsComponentProps}} from "./StylePropsComponent";
 
 {}

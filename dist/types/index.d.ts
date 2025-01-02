@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { StylePropsComponentProps } from "./StylePropsComponent";
 export type AProps = StylePropsComponentProps<HTMLAnchorElement> & React.AnchorHTMLAttributes<HTMLAnchorElement>;
 export declare const A: React.ForwardRefExoticComponent<Omit<AProps, "ref"> & React.RefAttributes<HTMLAnchorElement>>;

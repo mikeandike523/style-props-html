@@ -1,5 +1,5 @@
 import { jsx as _jsx } from "@emotion/react/jsx-runtime";
-import React from 'react';
+import * as React from 'react';
 import StylePropsComponent from "./StylePropsComponent";
 export const A = React.forwardRef(function A(props, ref) {
     return _jsx(StylePropsComponent, Object.assign({ tag: "a", ref: ref }, props));

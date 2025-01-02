@@ -90,7 +90,7 @@ In your project it may also be useful to perform your own ref-forwarding to exte
 This code was generate by ChatGPT and is not yet tested. I plan to test it soon. Use this example only as a demonstration of ideas.
 
 ```ts
-import React, { useEffect, useRef, forwardRef } from "react";
+import { useEffect, useRef, forwardRef } from "react";
 import { Canvas, CanvasProps } from "style-props-html";
 
 // Helper class to manage coordinate transformations and extents
