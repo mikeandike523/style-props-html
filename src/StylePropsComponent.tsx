@@ -28,21 +28,9 @@ function makeInclusionChecker<T>(array: T[] | readonly T[]) {
 }
 
 /**
- * An object representing a collection of all style props that can be present on a component.
- */
-export type StylePropsCollection = {
-  [P in keyof typeof cssPropertyMap]: (typeof cssPropertyMap)[P];
-};
-
-/**
  * A union of string literal types where each string literal represents a valid HTML tag.
  */
 export type AllowedTag = (typeof allTags)[number];
-
-/**
- * A closure to check if a string is a valid HTML tag.
- */
-const allTagsIC = makeInclusionChecker<(typeof allTags)[number]>([...allTags]);
 
 /**
  * A closure to check if a string is a void (no children) tag.
@@ -60,6 +48,20 @@ const cssPropertyNamesIC = makeInclusionChecker(cssPropertyNames);
  * A closure to check if a particular tag is a special case.
  */
 const specialCaseIC = makeInclusionChecker(specialCaseList);
+
+function getOriginalFromMangled(name: string): string {
+  if (name.startsWith("css")) {
+    const withoutCss = name.slice(3);
+    if (withoutCss.length === 1) {
+      return withoutCss.toLowerCase();
+    }
+    if (withoutCss.length > 1) {
+      return withoutCss.charAt(0).toLowerCase() + withoutCss.slice(1);
+    }
+    return name;
+  }
+  return name;
+}
 
 /**
  * The props present on a style props component.
@@ -162,15 +164,14 @@ export default forwardRef<
       if (cssPropertyNamesIC(propName)) {
         if (
           specialCaseAttributeListIC(
-            propName as (typeof specialCaseAttributeList)[number]
+            getOriginalFromMangled(
+              propName
+            ) as (typeof specialCaseAttributeList)[number]
           )
         ) {
-          // If the prop follows the special case naming convention such as "cssWidth" or "cssHeight"
-          if (propName.length > 3 && propName.startsWith("css")) {
-            const withoutCss = propName.slice(3);
-            const unmangled =
-              withoutCss.charAt(0).toUpperCase() + withoutCss.slice(1);
-            restPropsStyleProps[unmangled] = propValue;
+          // If the prop foll`ows the special case naming convention such as "cssWidth" or "cssHeight"
+          if (getOriginalFromMangled(propName) !== propName) {
+            restPropsStyleProps[getOriginalFromMangled(propName)] = propValue;
           } else {
             // Must be a regular prop
             // In the special cases this means that attributes such as "width" and "height"

@@ -13,7 +13,7 @@ import { forwardRef, createElement, } from "react";
 import { kebabCase } from "lodash";
 import { css as emotionCss } from "@emotion/css";
 import cssPropertyMap from "./cssPropertyMap";
-import { allTags, voidTags } from "./htmlTagData";
+import { voidTags } from "./htmlTagData";
 import { specialCaseList, specialCaseMap } from "./special-cases";
 /**
  * List of valid CSS property names
@@ -28,10 +28,6 @@ function makeInclusionChecker(array) {
     return (value) => asSet.has(value);
 }
 /**
- * A closure to check if a string is a valid HTML tag.
- */
-const allTagsIC = makeInclusionChecker([...allTags]);
-/**
  * A closure to check if a string is a void (no children) tag.
  */
 const voidTagsIC = makeInclusionChecker([
@@ -45,6 +41,19 @@ const cssPropertyNamesIC = makeInclusionChecker(cssPropertyNames);
  * A closure to check if a particular tag is a special case.
  */
 const specialCaseIC = makeInclusionChecker(specialCaseList);
+function getOriginalFromMangled(name) {
+    if (name.startsWith("css")) {
+        const withoutCss = name.slice(3);
+        if (withoutCss.length === 1) {
+            return withoutCss.toLowerCase();
+        }
+        if (withoutCss.length > 1) {
+            return withoutCss.charAt(0).toLowerCase() + withoutCss.slice(1);
+        }
+        return name;
+    }
+    return name;
+}
 /**
  * The style props component
  *
@@ -107,12 +116,10 @@ ref) {
         for (const [propName, propValue] of Object.entries(rest)) {
             // The css property names also include the special case attributes
             if (cssPropertyNamesIC(propName)) {
-                if (specialCaseAttributeListIC(propName)) {
-                    // If the prop follows the special case naming convention such as "cssWidth" or "cssHeight"
-                    if (propName.length > 3 && propName.startsWith("css")) {
-                        const withoutCss = propName.slice(3);
-                        const unmangled = withoutCss.charAt(0).toUpperCase() + withoutCss.slice(1);
-                        restPropsStyleProps[unmangled] = propValue;
+                if (specialCaseAttributeListIC(getOriginalFromMangled(propName))) {
+                    // If the prop foll`ows the special case naming convention such as "cssWidth" or "cssHeight"
+                    if (getOriginalFromMangled(propName) !== propName) {
+                        restPropsStyleProps[getOriginalFromMangled(propName)] = propValue;
                     }
                     else {
                         // Must be a regular prop

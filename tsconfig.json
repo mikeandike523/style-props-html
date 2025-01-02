@@ -20,7 +20,8 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
     "removeComments": false,
-    "sourceMap": true
+    "sourceMap": true,
+    "noErrorTruncation": true
   },
   "include": ["src/**/*"]
 }

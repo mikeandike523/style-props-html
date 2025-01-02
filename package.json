@@ -1,15 +1,18 @@
 {
   "name": "style-props-html",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A library that facilitates passing CSS styles as regular props using a collection of custom components that mirror traditional DOM elements.",
   "exports": {
-    "main": "./dist/cjs/index.js",
-    "module": "./dist/esm/index.js",
-    "exports": {
+    ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
     },
-    "types": "./dist/types/index.d.ts"
+    "./utility-style-props": {
+      "import": "./dist/esm/utility-style-props.js",
+      "require": "./dist/cjs/utility-style-props.js",
+      "types": "./dist/types/utility-style-props.d.ts"
+    }
   },
   "repository": {
     "type": "git",

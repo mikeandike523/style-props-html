@@ -74,7 +74,7 @@ export declare const cssPropertyMap: {
     readonly flexShrink: readonly ["number", "inherit", "initial", "unset"];
     readonly flexBasis: readonly ["auto", "inherit", "initial", "unset", "string"];
     readonly alignSelf: readonly ["auto", "flex-start", "flex-end", "center", "baseline", "stretch", "inherit", "initial", "unset"];
-    readonly gap: readonly ["inherit", "initial", "unset", "string"];
+    readonly gap: readonly ["inherit", "initial", "unset", "string", "number"];
     readonly gridTemplateColumns: readonly ["string"];
     readonly gridTemplateRows: readonly ["string"];
     readonly gridTemplateAreas: readonly ["string"];

@@ -1,12 +1,6 @@
 import { ReactNode, RefAttributes, HTMLAttributes, ForwardedRef } from "react";
-import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
+import { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags } from "./htmlTagData";
-/**
- * An object representing a collection of all style props that can be present on a component.
- */
-export type StylePropsCollection = {
-    [P in keyof typeof cssPropertyMap]: (typeof cssPropertyMap)[P];
-};
 /**
  * A union of string literal types where each string literal represents a valid HTML tag.
  */
@@ -109,7 +103,7 @@ declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttri
     readonly flexShrink?: number | "inherit" | "initial" | "unset" | undefined;
     readonly flexBasis?: string | undefined;
     readonly alignSelf?: "inherit" | "initial" | "unset" | "auto" | "center" | "flex-start" | "flex-end" | "stretch" | "baseline" | undefined;
-    readonly gap?: string | undefined;
+    readonly gap?: string | number | undefined;
     readonly gridTemplateColumns?: string | undefined;
     readonly gridTemplateRows?: string | undefined;
     readonly gridTemplateAreas?: string | undefined;

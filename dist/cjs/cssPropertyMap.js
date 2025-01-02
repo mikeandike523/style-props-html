@@ -77,7 +77,7 @@ exports.cssPropertyMap = {
     flexShrink: ["number", "inherit", "initial", "unset"],
     flexBasis: ["auto", "inherit", "initial", "unset", "string"],
     alignSelf: ["auto", "flex-start", "flex-end", "center", "baseline", "stretch", "inherit", "initial", "unset"],
-    gap: ["inherit", "initial", "unset", "string"],
+    gap: ["inherit", "initial", "unset", "string", "number"],
     gridTemplateColumns: ["string"],
     gridTemplateRows: ["string"],
     gridTemplateAreas: ["string"],
