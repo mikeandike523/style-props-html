@@ -5,7 +5,8 @@
     }
   ],
   "settings": {
-    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "files.eol": "\n",
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "[python]": {
@@ -20,8 +21,6 @@
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
     "python.terminal.activateEnvInCurrentTerminal": false,
     "python.terminal.activateEnvironment": false,
-    "pylint.path": ["${workspaceFolder}/.venv/bin/pylint"],
-    "pylint.interpreter": ["${workspaceFolder}/.venv/bin/python3"],
     "python.analysis.extraPaths": ["${workspaceFolder}"]
   },
   "extensions": {
