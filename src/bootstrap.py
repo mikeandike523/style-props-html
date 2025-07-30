@@ -87,6 +87,20 @@ Template().from_file("templates/file/special-cases.ts.txt").render_save("special
     special_case_map,indent=2
 ))
 
+spc_rcs_list = []
+
+for tag, spec in html_element_specs.items():
+    if spec.is_void_element:
+        spc_rcs_list.append(f"tag == '{tag}' ? <{tag} className={{className}} ref={{ref}} css={{emotionCss`${{className}};${{existingCss}};${{stylePropsString}}`}} {{...restPropsRegularProps}}/> :")
+    else:
+        spc_rcs_list.append(f"tag == '{tag}' ? <{tag} className={{className}} ref={{ref}} css={{emotionCss`${{className}};${{existingCss}};${{stylePropsString}}`}} {{...restPropsRegularProps}}>{{children}}</{tag}> :")
+
+Template().from_file("templates/file/StylePropsComponent.tsx.txt").render_save("StylePropsComponent.tsx",
+    RETURN_CONDITIONAL_STATEMENT="\n".join(map(lambda x: " "*4+x, spc_rcs_list
+    ))                                                           
+)
+
+
 
 HTML_TAG_DATA_TS_TEMPLATE = """
 export const nonVoidTags = [
