@@ -1,5 +1,5 @@
 import { ReactNode, RefAttributes, HTMLAttributes, ForwardedRef } from "react";
-import { SerializedStyles } from "@emotion/react";
+import { type Interpolation, type Theme } from "@emotion/react";
 import { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags } from "./htmlTagData";
 /**
@@ -12,8 +12,7 @@ export type AllowedTag = (typeof allTags)[number];
 export type StylePropsComponentProps<T extends HTMLElement> = HTMLAttributes<T> & RefAttributes<T> & {
     ref?: ForwardedRef<T>;
     children?: ReactNode | ReactNode[];
-    className?: string;
-    css?: SerializedStyles;
+    css?: Interpolation<Theme>;
 } & {
     [K in keyof CSSPropertyMap]?: CSSPropertyMap[K];
 };
@@ -28,8 +27,7 @@ export type StylePropsComponentProps<T extends HTMLElement> = HTMLAttributes<T> 
 declare const _default: import("react").ForwardRefExoticComponent<Omit<HTMLAttributes<HTMLElement> & RefAttributes<HTMLElement> & {
     ref?: ForwardedRef<HTMLElement> | undefined;
     children?: ReactNode | ReactNode[];
-    className?: string;
-    css?: SerializedStyles;
+    css?: Interpolation<Theme>;
 } & {
     readonly objectFit?: "cover" | "contain" | "none" | "inherit" | "initial" | "unset" | "fill" | undefined;
     readonly whiteSpace?: "normal" | "nowrap" | "pre" | "pre-wrap" | "pre-line" | undefined;

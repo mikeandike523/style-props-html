@@ -1,13 +1,12 @@
 import {
   forwardRef,
-  createElement,
   ReactNode,
   RefAttributes,
   HTMLAttributes,
   ForwardedRef,
 } from "react";
 import { kebabCase } from "lodash";
-import { css as emotionCss, SerializedStyles} from "@emotion/react";
+import { css as emotionCss, type Interpolation, type Theme } from "@emotion/react";
 
 import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags, voidTags } from "./htmlTagData";
@@ -79,12 +78,10 @@ export type StylePropsComponentProps<T extends HTMLElement> =
       // Using ReactNode is preferable (as of 2024) to ReactElement or JSX.element
       // Particularly, around string literal children or falsy children
       children?: ReactNode | ReactNode[];
-      // Will contain any user specified classnames in the JSX, and may also contain the classname
-      // For the class created from the `css` prop if the user's project uses Emotion CSS
-      className?: string;
-      // I'm not 100% sure how emotionCss is passed down, so just in case, let's capture "css" prop
-      // (if it is passed at this stage)
-      css?: SerializedStyles;
+      // Capture Emotion's css prop when passed to this component.
+      // Note: Emotion's css prop accepts many forms (objects, arrays, functions, etc),
+      // so prefer Interpolation<Theme> over SerializedStyles.
+      css?: Interpolation<Theme>;
     } & {
       // A collection of style props and their values
       [K in keyof CSSPropertyMap]?: CSSPropertyMap[K];
@@ -117,14 +114,9 @@ export default forwardRef<
      */
     tag,
     /**
-     * EmotionCSS engine does NOT pass down css prop
-     * The propagated emotion css data is actually captured in the `className` prop
+     * Forwarded Emotion css prop from callers, if any
      */
-    className,
-    /**
-    * In case I was wrong with the previous statement...
-    */
-    css:existingCss,
+    css: existingCss,
     /**
      * This will contain a combination of regular props and style props
      */
@@ -142,6 +134,10 @@ export default forwardRef<
 
   /**
    * The portion of the remaining props that are interpreted as regular props
+   *
+   * NOTE:
+   * - This will include className if the user passes it.
+   * - It will also include data-*, aria-*, onClick, etc.
    */
   const restPropsRegularProps = {} as any;
 
@@ -176,7 +172,7 @@ export default forwardRef<
             ) as (typeof specialCaseAttributeList)[number]
           )
         ) {
-          // If the prop foll`ows the special case naming convention such as "cssWidth" or "cssHeight"
+          // If the prop follows the special case naming convention such as "cssWidth" or "cssHeight"
           if (getOriginalFromMangled(propName) !== propName) {
             restPropsStyleProps[getOriginalFromMangled(propName)] = propValue;
           } else {
@@ -184,7 +180,6 @@ export default forwardRef<
             // In the special cases this means that attributes such as "width" and "height"
             // would be applied preferentially to the regular props
             // and we would need to add the "css" prefix if we explicitly want a style prop
-
             restPropsRegularProps[propName] = propValue;
           }
         } else {
@@ -207,118 +202,125 @@ export default forwardRef<
     })
     .join("\n")}\n\n`;
 
+  /**
+   * Convert generated style-props CSS into an Emotion style block,
+   * then compose with any incoming css prop.
+   */
+  const generatedCss = emotionCss`${stylePropsString}`;
+  const mergedCss = [generatedCss, existingCss];
+
   return (
-    tag == 'a' ? <a className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</a> :
-    tag == 'abbr' ? <abbr className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</abbr> :
-    tag == 'address' ? <address className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</address> :
-    tag == 'area' ? <area className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'article' ? <article className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</article> :
-    tag == 'aside' ? <aside className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</aside> :
-    tag == 'audio' ? <audio className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</audio> :
-    tag == 'b' ? <b className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</b> :
-    tag == 'base' ? <base className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'bdi' ? <bdi className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</bdi> :
-    tag == 'bdo' ? <bdo className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</bdo> :
-    tag == 'blockquote' ? <blockquote className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</blockquote> :
-    tag == 'body' ? <body className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</body> :
-    tag == 'br' ? <br className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'button' ? <button className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</button> :
-    tag == 'canvas' ? <canvas className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</canvas> :
-    tag == 'caption' ? <caption className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</caption> :
-    tag == 'cite' ? <cite className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</cite> :
-    tag == 'code' ? <code className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</code> :
-    tag == 'col' ? <col className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'colgroup' ? <colgroup className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</colgroup> :
-    tag == 'data' ? <data className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</data> :
-    tag == 'datalist' ? <datalist className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</datalist> :
-    tag == 'dd' ? <dd className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</dd> :
-    tag == 'del' ? <del className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</del> :
-    tag == 'details' ? <details className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</details> :
-    tag == 'dfn' ? <dfn className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</dfn> :
-    tag == 'dialog' ? <dialog className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</dialog> :
-    tag == 'div' ? <div className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</div> :
-    tag == 'dl' ? <dl className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</dl> :
-    tag == 'dt' ? <dt className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</dt> :
-    tag == 'em' ? <em className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</em> :
-    tag == 'embed' ? <embed className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'fieldset' ? <fieldset className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</fieldset> :
-    tag == 'figcaption' ? <figcaption className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</figcaption> :
-    tag == 'figure' ? <figure className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</figure> :
-    tag == 'footer' ? <footer className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</footer> :
-    tag == 'form' ? <form className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</form> :
-    tag == 'h1' ? <h1 className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</h1> :
-    tag == 'h2' ? <h2 className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</h2> :
-    tag == 'h3' ? <h3 className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</h3> :
-    tag == 'h4' ? <h4 className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</h4> :
-    tag == 'h5' ? <h5 className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</h5> :
-    tag == 'h6' ? <h6 className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</h6> :
-    tag == 'head' ? <head className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</head> :
-    tag == 'header' ? <header className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</header> :
-    tag == 'hr' ? <hr className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'html' ? <html className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</html> :
-    tag == 'i' ? <i className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</i> :
-    tag == 'iframe' ? <iframe className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</iframe> :
-    tag == 'img' ? <img className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'input' ? <input className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'ins' ? <ins className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</ins> :
-    tag == 'kbd' ? <kbd className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</kbd> :
-    tag == 'label' ? <label className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</label> :
-    tag == 'legend' ? <legend className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</legend> :
-    tag == 'li' ? <li className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</li> :
-    tag == 'link' ? <link className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'main' ? <main className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</main> :
-    tag == 'map' ? <map className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</map> :
-    tag == 'mark' ? <mark className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</mark> :
-    tag == 'menu' ? <menu className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</menu> :
-    tag == 'meta' ? <meta className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'meter' ? <meter className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</meter> :
-    tag == 'nav' ? <nav className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</nav> :
-    tag == 'noscript' ? <noscript className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</noscript> :
-    tag == 'object' ? <object className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</object> :
-    tag == 'ol' ? <ol className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</ol> :
-    tag == 'optgroup' ? <optgroup className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</optgroup> :
-    tag == 'option' ? <option className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</option> :
-    tag == 'output' ? <output className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</output> :
-    tag == 'p' ? <p className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</p> :
-    tag == 'param' ? <param className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'picture' ? <picture className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</picture> :
-    tag == 'pre' ? <pre className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</pre> :
-    tag == 'progress' ? <progress className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</progress> :
-    tag == 'q' ? <q className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</q> :
-    tag == 'rp' ? <rp className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</rp> :
-    tag == 'rt' ? <rt className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</rt> :
-    tag == 'ruby' ? <ruby className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</ruby> :
-    tag == 's' ? <s className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</s> :
-    tag == 'samp' ? <samp className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</samp> :
-    tag == 'script' ? <script className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</script> :
-    tag == 'section' ? <section className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</section> :
-    tag == 'select' ? <select className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</select> :
-    tag == 'slot' ? <slot className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</slot> :
-    tag == 'small' ? <small className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</small> :
-    tag == 'source' ? <source className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'span' ? <span className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</span> :
-    tag == 'strong' ? <strong className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</strong> :
-    tag == 'style' ? <style className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</style> :
-    tag == 'sub' ? <sub className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</sub> :
-    tag == 'summary' ? <summary className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</summary> :
-    tag == 'sup' ? <sup className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</sup> :
-    tag == 'table' ? <table className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</table> :
-    tag == 'tbody' ? <tbody className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</tbody> :
-    tag == 'td' ? <td className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</td> :
-    tag == 'template' ? <template className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</template> :
-    tag == 'textarea' ? <textarea className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</textarea> :
-    tag == 'tfoot' ? <tfoot className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</tfoot> :
-    tag == 'th' ? <th className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</th> :
-    tag == 'thead' ? <thead className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</thead> :
-    tag == 'time' ? <time className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</time> :
-    tag == 'title' ? <title className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</title> :
-    tag == 'tr' ? <tr className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</tr> :
-    tag == 'track' ? <track className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
-    tag == 'u' ? <u className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</u> :
-    tag == 'ul' ? <ul className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</ul> :
-    tag == 'var' ? <var className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</var> :
-    tag == 'video' ? <video className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}>{children}</video> :
-    tag == 'wbr' ? <wbr className={className} ref={ref} css={emotionCss`${className};${existingCss};${stylePropsString}`} {...restPropsRegularProps}/> :
+    tag == 'a' ? <a ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</a> :
+    tag == 'abbr' ? <abbr ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</abbr> :
+    tag == 'address' ? <address ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</address> :
+    tag == 'area' ? <area ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'article' ? <article ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</article> :
+    tag == 'aside' ? <aside ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</aside> :
+    tag == 'audio' ? <audio ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</audio> :
+    tag == 'b' ? <b ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</b> :
+    tag == 'base' ? <base ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'bdi' ? <bdi ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</bdi> :
+    tag == 'bdo' ? <bdo ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</bdo> :
+    tag == 'blockquote' ? <blockquote ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</blockquote> :
+    tag == 'body' ? <body ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</body> :
+    tag == 'br' ? <br ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'button' ? <button ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</button> :
+    tag == 'canvas' ? <canvas ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</canvas> :
+    tag == 'caption' ? <caption ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</caption> :
+    tag == 'cite' ? <cite ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</cite> :
+    tag == 'code' ? <code ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</code> :
+    tag == 'col' ? <col ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'colgroup' ? <colgroup ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</colgroup> :
+    tag == 'data' ? <data ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</data> :
+    tag == 'datalist' ? <datalist ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</datalist> :
+    tag == 'dd' ? <dd ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dd> :
+    tag == 'del' ? <del ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</del> :
+    tag == 'details' ? <details ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</details> :
+    tag == 'dfn' ? <dfn ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dfn> :
+    tag == 'dialog' ? <dialog ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dialog> :
+    tag == 'div' ? <div ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</div> :
+    tag == 'dl' ? <dl ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dl> :
+    tag == 'dt' ? <dt ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dt> :
+    tag == 'em' ? <em ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</em> :
+    tag == 'embed' ? <embed ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'fieldset' ? <fieldset ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</fieldset> :
+    tag == 'figcaption' ? <figcaption ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</figcaption> :
+    tag == 'figure' ? <figure ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</figure> :
+    tag == 'footer' ? <footer ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</footer> :
+    tag == 'form' ? <form ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</form> :
+    tag == 'h1' ? <h1 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h1> :
+    tag == 'h2' ? <h2 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h2> :
+    tag == 'h3' ? <h3 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h3> :
+    tag == 'h4' ? <h4 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h4> :
+    tag == 'h5' ? <h5 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h5> :
+    tag == 'h6' ? <h6 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h6> :
+    tag == 'head' ? <head ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</head> :
+    tag == 'header' ? <header ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</header> :
+    tag == 'hr' ? <hr ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'html' ? <html ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</html> :
+    tag == 'i' ? <i ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</i> :
+    tag == 'iframe' ? <iframe ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</iframe> :
+    tag == 'img' ? <img ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'input' ? <input ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'ins' ? <ins ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ins> :
+    tag == 'kbd' ? <kbd ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</kbd> :
+    tag == 'label' ? <label ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</label> :
+    tag == 'legend' ? <legend ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</legend> :
+    tag == 'li' ? <li ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</li> :
+    tag == 'link' ? <link ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'main' ? <main ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</main> :
+    tag == 'map' ? <map ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</map> :
+    tag == 'mark' ? <mark ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</mark> :
+    tag == 'menu' ? <menu ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</menu> :
+    tag == 'meta' ? <meta ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'meter' ? <meter ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</meter> :
+    tag == 'nav' ? <nav ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</nav> :
+    tag == 'noscript' ? <noscript ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</noscript> :
+    tag == 'object' ? <object ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</object> :
+    tag == 'ol' ? <ol ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ol> :
+    tag == 'optgroup' ? <optgroup ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</optgroup> :
+    tag == 'option' ? <option ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</option> :
+    tag == 'output' ? <output ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</output> :
+    tag == 'p' ? <p ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</p> :
+    tag == 'param' ? <param ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'picture' ? <picture ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</picture> :
+    tag == 'pre' ? <pre ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</pre> :
+    tag == 'progress' ? <progress ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</progress> :
+    tag == 'q' ? <q ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</q> :
+    tag == 'rp' ? <rp ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</rp> :
+    tag == 'rt' ? <rt ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</rt> :
+    tag == 'ruby' ? <ruby ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ruby> :
+    tag == 's' ? <s ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</s> :
+    tag == 'samp' ? <samp ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</samp> :
+    tag == 'script' ? <script ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</script> :
+    tag == 'section' ? <section ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</section> :
+    tag == 'select' ? <select ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</select> :
+    tag == 'slot' ? <slot ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</slot> :
+    tag == 'small' ? <small ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</small> :
+    tag == 'source' ? <source ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'span' ? <span ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</span> :
+    tag == 'strong' ? <strong ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</strong> :
+    tag == 'style' ? <style ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</style> :
+    tag == 'sub' ? <sub ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</sub> :
+    tag == 'summary' ? <summary ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</summary> :
+    tag == 'sup' ? <sup ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</sup> :
+    tag == 'table' ? <table ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</table> :
+    tag == 'tbody' ? <tbody ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</tbody> :
+    tag == 'td' ? <td ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</td> :
+    tag == 'template' ? <template ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</template> :
+    tag == 'textarea' ? <textarea ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</textarea> :
+    tag == 'tfoot' ? <tfoot ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</tfoot> :
+    tag == 'th' ? <th ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</th> :
+    tag == 'thead' ? <thead ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</thead> :
+    tag == 'time' ? <time ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</time> :
+    tag == 'title' ? <title ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</title> :
+    tag == 'tr' ? <tr ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</tr> :
+    tag == 'track' ? <track ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
+    tag == 'u' ? <u ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</u> :
+    tag == 'ul' ? <ul ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ul> :
+    tag == 'var' ? <var ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</var> :
+    tag == 'video' ? <video ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</video> :
+    tag == 'wbr' ? <wbr ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
     <></>
   );
 });

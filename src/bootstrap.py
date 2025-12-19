@@ -67,14 +67,20 @@ for record in special_cases_records:
         modified_name = f"css{attribute.capitalize()}"
         all_css_property_map[modified_name] = possible_values
 
-css_property_map_lines=[]
+css_property_map_lines = []
 
 for css_attribute_name, possible_values in all_css_property_map.items():
-    css_property_map_lines .append( f"  {css_attribute_name}: [{", ".join(map(lambda x: f"\"{x}\"",possible_values))}],")
+    css_property_map_lines.append(
+        f"  {css_attribute_name}: [{", ".join(map(lambda x: f"\"{x}\"",possible_values))}],"
+    )
 
-Template().from_file("templates/file/cssPropertyMap.ts.txt").render_save("cssPropertyMap.ts",CSS_PROPERTY_MAP="\n".join(css_property_map_lines))
+Template().from_file("templates/file/cssPropertyMap.ts.txt").render_save(
+    "cssPropertyMap.ts", CSS_PROPERTY_MAP="\n".join(css_property_map_lines)
+)
 
-all_special_elements = set([special_case["element"] for special_case in special_cases_records])
+all_special_elements = set(
+    [special_case["element"] for special_case in special_cases_records]
+)
 
 special_case_map = defaultdict(list)
 
@@ -83,9 +89,9 @@ for record in special_cases_records:
     attributes = record["attributes"]
     special_case_map[element].extend(attributes)
 
-Template().from_file("templates/file/special-cases.ts.txt").render_save("special-cases.ts", SPECIAL_CASES=json.dumps(
-    special_case_map,indent=2
-))
+Template().from_file("templates/file/special-cases.ts.txt").render_save(
+    "special-cases.ts", SPECIAL_CASES=json.dumps(special_case_map, indent=2)
+)
 
 spc_rcs_list = []
 
@@ -100,9 +106,9 @@ for tag, spec in html_element_specs.items():
             f"tag == '{tag}' ? <{tag} ref={{ref}} css={{mergedCss}} {{...restPropsRegularProps}}>{{children}}</{tag}> :"
         )
 
-Template().from_file("templates/file/StylePropsComponent.tsx.txt").render_save("StylePropsComponent.tsx",
-    RETURN_CONDITIONAL_STATEMENT="\n".join(map(lambda x: " "*4+x, spc_rcs_list
-    ))
+Template().from_file("templates/file/StylePropsComponent.tsx.txt").render_save(
+    "StylePropsComponent.tsx",
+    RETURN_CONDITIONAL_STATEMENT="\n".join(map(lambda x: " " * 4 + x, spc_rcs_list)),
 )
 
 
@@ -133,7 +139,7 @@ with open("htmlTagData.ts", "w", encoding="utf-8") as f:
 
 STYLE_PROPS_HTML_TSX_TEMPLATE = """
 import * as React from 'react';
-import StylePropsComponent, {StylePropsComponentProps} from "./StylePropsComponent";
+import StylePropsComponent, {{StylePropsComponentProps}} from "./StylePropsComponent";
 
 {}
 """
@@ -159,7 +165,7 @@ style_props_html_file_text = ""
 for tag, spec in html_element_specs.items():
     component_name = f"{tag[0].upper()}{(tag[1:])}"
     if spec.mangle:
-        component_name = "SPH"+component_name
+        component_name = "SPH" + component_name
     props_name = f"{component_name}Props"
     element_type = spec.element_type
     opt_special_attributes_text = (
