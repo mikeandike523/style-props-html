@@ -17,8 +17,8 @@
     "typecheck": "tsc --noEmit",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json",
-    "build": "npm run build:cjs && npm run build:esm",
-    "bootstrap": ".\\__git_bash.bat .\\__python src/bootstrap.py"
+    "build": "pnpm run build:cjs && pnpm run build:esm",
+    "bootstrap": "bash __python src/bootstrap.py"
   },
   "keywords": [
     "style-props",

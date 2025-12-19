@@ -9,6 +9,12 @@ git config core.eol lf
 echo "enabling safe-CRLF checking (will refuse commits with mixed line endings)"
 git config core.safecrlf true
 
+echo "Making scripts executable..."
+
+chmod +x __pipenv
+chmod +x __python
+chmod +x __pylint
+
 echo "Removing .venv (if exists)..."
 rm -rf .venv
 
@@ -16,7 +22,11 @@ echo "Removing node_modules (if exists)..."
 rm -rf node_modules
 
 echo "Creating python virtual environment (.venv)..."
-python -m venv .venv
+if [ "$(uname)" == "Darwin" ] || [ "$(uname)" == "Linux" ]; then
+    python3 -m venv .venv
+else
+    python -m venv .venv
+fi
 
 echo "Installing pipenv..."
 
@@ -35,7 +45,7 @@ echo "Installing pipenv dependencies..."
 ./__python -m pipenv install
 
 echo "Installing npm dependencies..."
-npm install
+pnpm install
 
 echo "Removing build folders (if exists)..."
 
