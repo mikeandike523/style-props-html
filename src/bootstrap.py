@@ -91,15 +91,19 @@ spc_rcs_list = []
 
 for tag, spec in html_element_specs.items():
     if spec.is_void_element:
-        spc_rcs_list.append(f"tag == '{tag}' ? <{tag} className={{className}} ref={{ref}} css={{emotionCss`${{className}};${{existingCss}};${{stylePropsString}}`}} {{...restPropsRegularProps}}/> :")
+        # className is auto-forwarded via {...restPropsRegularProps} if present
+        spc_rcs_list.append(
+            f"tag == '{tag}' ? <{tag} ref={{ref}} css={{mergedCss}} {{...restPropsRegularProps}}/> :"
+        )
     else:
-        spc_rcs_list.append(f"tag == '{tag}' ? <{tag} className={{className}} ref={{ref}} css={{emotionCss`${{className}};${{existingCss}};${{stylePropsString}}`}} {{...restPropsRegularProps}}>{{children}}</{tag}> :")
+        spc_rcs_list.append(
+            f"tag == '{tag}' ? <{tag} ref={{ref}} css={{mergedCss}} {{...restPropsRegularProps}}>{{children}}</{tag}> :"
+        )
 
 Template().from_file("templates/file/StylePropsComponent.tsx.txt").render_save("StylePropsComponent.tsx",
     RETURN_CONDITIONAL_STATEMENT="\n".join(map(lambda x: " "*4+x, spc_rcs_list
-    ))                                                           
+    ))
 )
-
 
 
 HTML_TAG_DATA_TS_TEMPLATE = """
@@ -129,7 +133,7 @@ with open("htmlTagData.ts", "w", encoding="utf-8") as f:
 
 STYLE_PROPS_HTML_TSX_TEMPLATE = """
 import * as React from 'react';
-import StylePropsComponent, {{StylePropsComponentProps}} from "./StylePropsComponent";
+import StylePropsComponent, {StylePropsComponentProps} from "./StylePropsComponent";
 
 {}
 """

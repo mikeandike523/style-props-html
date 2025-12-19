@@ -1,13 +1,12 @@
 import {
   forwardRef,
-  createElement,
   ReactNode,
   RefAttributes,
   HTMLAttributes,
   ForwardedRef,
 } from "react";
 import { kebabCase } from "lodash";
-import { css as emotionCss, SerializedStyles} from "@emotion/react";
+import { css as emotionCss, type Interpolation, type Theme } from "@emotion/react";
 
 import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags, voidTags } from "./htmlTagData";
@@ -79,12 +78,10 @@ export type StylePropsComponentProps<T extends HTMLElement> =
       // Using ReactNode is preferable (as of 2024) to ReactElement or JSX.element
       // Particularly, around string literal children or falsy children
       children?: ReactNode | ReactNode[];
-      // Will contain any user specified classnames in the JSX, and may also contain the classname
-      // For the class created from the `css` prop if the user's project uses Emotion CSS
-      className?: string;
-      // I'm not 100% sure how emotionCss is passed down, so just in case, let's capture "css" prop
-      // (if it is passed at this stage)
-      css?: SerializedStyles;
+      // Capture Emotion's css prop when passed to this component.
+      // Note: Emotion's css prop accepts many forms (objects, arrays, functions, etc),
+      // so prefer Interpolation<Theme> over SerializedStyles.
+      css?: Interpolation<Theme>;
     } & {
       // A collection of style props and their values
       [K in keyof CSSPropertyMap]?: CSSPropertyMap[K];
@@ -117,14 +114,9 @@ export default forwardRef<
      */
     tag,
     /**
-     * EmotionCSS engine does NOT pass down css prop
-     * The propagated emotion css data is actually captured in the `className` prop
+     * Forwarded Emotion css prop from callers, if any
      */
-    className,
-    /**
-    * In case I was wrong with the previous statement...
-    */
-    css:existingCss,
+    css: existingCss,
     /**
      * This will contain a combination of regular props and style props
      */
@@ -142,6 +134,10 @@ export default forwardRef<
 
   /**
    * The portion of the remaining props that are interpreted as regular props
+   *
+   * NOTE:
+   * - This will include className if the user passes it.
+   * - It will also include data-*, aria-*, onClick, etc.
    */
   const restPropsRegularProps = {} as any;
 
@@ -176,7 +172,7 @@ export default forwardRef<
             ) as (typeof specialCaseAttributeList)[number]
           )
         ) {
-          // If the prop foll`ows the special case naming convention such as "cssWidth" or "cssHeight"
+          // If the prop follows the special case naming convention such as "cssWidth" or "cssHeight"
           if (getOriginalFromMangled(propName) !== propName) {
             restPropsStyleProps[getOriginalFromMangled(propName)] = propValue;
           } else {
@@ -184,7 +180,6 @@ export default forwardRef<
             // In the special cases this means that attributes such as "width" and "height"
             // would be applied preferentially to the regular props
             // and we would need to add the "css" prefix if we explicitly want a style prop
-
             restPropsRegularProps[propName] = propValue;
           }
         } else {
@@ -206,6 +201,13 @@ export default forwardRef<
       return `${kebabCase(key)}: ${value};`;
     })
     .join("\n")}\n\n`;
+
+  /**
+   * Convert generated style-props CSS into an Emotion style block,
+   * then compose with any incoming css prop.
+   */
+  const generatedCss = emotionCss`${stylePropsString}`;
+  const mergedCss = [generatedCss, existingCss];
 
   return (
 << RETURN_CONDITIONAL_STATEMENT >>
