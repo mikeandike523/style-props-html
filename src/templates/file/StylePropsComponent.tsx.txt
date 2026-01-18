@@ -6,7 +6,12 @@ import {
   ForwardedRef,
 } from "react";
 import { kebabCase } from "lodash";
-import { css as emotionCss, type Interpolation, type Theme } from "@emotion/react";
+import {
+  css as emotionCss,
+  type Interpolation,
+  type Theme,
+  ClassNames,
+} from "@emotion/react";
 
 import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags, voidTags } from "./htmlTagData";
@@ -193,24 +198,58 @@ export default forwardRef<
     }
   }
 
+    const {
+    className: incomingClassName,
+    ...restPropsRegularPropsSansClassName
+  } = restPropsRegularProps as { className?: string };
+
   /**
    * Compile CSS source code compatible with Emotion CSS
    */
-  const stylePropsString = `\n\n${Object.entries(restPropsStyleProps)
-    .map(([key, value]) => {
-      return `${kebabCase(key)}: ${value};`;
-    })
-    .join("\n")}\n\n`;
+  const stylePropsEntries = Object.entries(restPropsStyleProps).filter(
+    ([, value]) =>
+      value !== undefined &&
+      value !== null &&
+      value !== false &&
+      (typeof value === "string" || typeof value === "number")
+  );
+
+  const stylePropsString =
+    stylePropsEntries.length === 0
+      ? ""
+      : `\n\n${stylePropsEntries
+          .map(([key, value]) => `${kebabCase(key)}: ${String(value)};`)
+          .join("\n")}\n\n`;
 
   /**
    * Convert generated style-props CSS into an Emotion style block,
    * then compose with any incoming css prop.
    */
-  const generatedCss = emotionCss`${stylePropsString}`;
-  const mergedCss = [generatedCss, existingCss];
+  const hasGeneratedCss = stylePropsString.length > 0;
+  const hasIncomingCss = existingCss !== undefined;
+
+  const mergedCss: Interpolation<Theme> | Interpolation<Theme>[] | undefined =
+    hasGeneratedCss && hasIncomingCss
+      ? [emotionCss`${stylePropsString}`, existingCss]
+      : hasGeneratedCss
+        ? emotionCss`${stylePropsString}`
+        : hasIncomingCss
+          ? existingCss
+          : undefined;
 
   return (
+    <ClassNames>
+      {({ css, cx }) => {
+        const mergedClassName = cx(
+          incomingClassName,
+          mergedCss ? css(mergedCss) : undefined
+        );
+
+        return (
 << RETURN_CONDITIONAL_STATEMENT >>
-    <></>
+          <></>
+        );
+      }}
+    </ClassNames>
   );
 });
