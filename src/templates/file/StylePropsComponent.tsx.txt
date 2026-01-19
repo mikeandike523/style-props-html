@@ -4,6 +4,7 @@ import {
   RefAttributes,
   HTMLAttributes,
   ForwardedRef,
+  RefObject
 } from "react";
 import { kebabCase } from "lodash";
 import {
@@ -238,18 +239,7 @@ export default forwardRef<
           : undefined;
 
   return (
-    <ClassNames>
-      {({ css, cx }) => {
-        const mergedClassName = cx(
-          incomingClassName,
-          mergedCss ? css(mergedCss) : undefined
-        );
-
-        return (
 << RETURN_CONDITIONAL_STATEMENT >>
           <></>
-        );
-      }}
-    </ClassNames>
   );
 });

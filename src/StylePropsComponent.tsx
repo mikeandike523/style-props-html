@@ -4,9 +4,15 @@ import {
   RefAttributes,
   HTMLAttributes,
   ForwardedRef,
+  RefObject
 } from "react";
 import { kebabCase } from "lodash";
-import { css as emotionCss, type Interpolation, type Theme } from "@emotion/react";
+import {
+  css as emotionCss,
+  type Interpolation,
+  type Theme,
+  ClassNames,
+} from "@emotion/react";
 
 import cssPropertyMap, { CSSPropertyMap } from "./cssPropertyMap";
 import { allTags, voidTags } from "./htmlTagData";
@@ -193,134 +199,157 @@ export default forwardRef<
     }
   }
 
+    const {
+    className: incomingClassName,
+    ...restPropsRegularPropsSansClassName
+  } = restPropsRegularProps as { className?: string };
+
   /**
    * Compile CSS source code compatible with Emotion CSS
    */
-  const stylePropsString = `\n\n${Object.entries(restPropsStyleProps)
-    .map(([key, value]) => {
-      return `${kebabCase(key)}: ${value};`;
-    })
-    .join("\n")}\n\n`;
+  const stylePropsEntries = Object.entries(restPropsStyleProps).filter(
+    ([, value]) =>
+      value !== undefined &&
+      value !== null &&
+      value !== false &&
+      (typeof value === "string" || typeof value === "number")
+  );
+
+  const stylePropsString =
+    stylePropsEntries.length === 0
+      ? ""
+      : `\n\n${stylePropsEntries
+          .map(([key, value]) => `${kebabCase(key)}: ${String(value)};`)
+          .join("\n")}\n\n`;
 
   /**
    * Convert generated style-props CSS into an Emotion style block,
    * then compose with any incoming css prop.
    */
-  const generatedCss = emotionCss`${stylePropsString}`;
-  const mergedCss = [generatedCss, existingCss];
+  const hasGeneratedCss = stylePropsString.length > 0;
+  const hasIncomingCss = existingCss !== undefined;
+
+  const mergedCss: Interpolation<Theme> | Interpolation<Theme>[] | undefined =
+    hasGeneratedCss && hasIncomingCss
+      ? [emotionCss`${stylePropsString}`, existingCss]
+      : hasGeneratedCss
+        ? emotionCss`${stylePropsString}`
+        : hasIncomingCss
+          ? existingCss
+          : undefined;
 
   return (
-    tag == 'a' ? <a ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</a> :
-    tag == 'abbr' ? <abbr ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</abbr> :
-    tag == 'address' ? <address ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</address> :
-    tag == 'area' ? <area ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'article' ? <article ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</article> :
-    tag == 'aside' ? <aside ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</aside> :
-    tag == 'audio' ? <audio ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</audio> :
-    tag == 'b' ? <b ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</b> :
-    tag == 'base' ? <base ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'bdi' ? <bdi ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</bdi> :
-    tag == 'bdo' ? <bdo ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</bdo> :
-    tag == 'blockquote' ? <blockquote ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</blockquote> :
-    tag == 'body' ? <body ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</body> :
-    tag == 'br' ? <br ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'button' ? <button ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</button> :
-    tag == 'canvas' ? <canvas ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</canvas> :
-    tag == 'caption' ? <caption ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</caption> :
-    tag == 'cite' ? <cite ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</cite> :
-    tag == 'code' ? <code ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</code> :
-    tag == 'col' ? <col ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'colgroup' ? <colgroup ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</colgroup> :
-    tag == 'data' ? <data ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</data> :
-    tag == 'datalist' ? <datalist ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</datalist> :
-    tag == 'dd' ? <dd ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dd> :
-    tag == 'del' ? <del ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</del> :
-    tag == 'details' ? <details ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</details> :
-    tag == 'dfn' ? <dfn ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dfn> :
-    tag == 'dialog' ? <dialog ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dialog> :
-    tag == 'div' ? <div ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</div> :
-    tag == 'dl' ? <dl ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dl> :
-    tag == 'dt' ? <dt ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</dt> :
-    tag == 'em' ? <em ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</em> :
-    tag == 'embed' ? <embed ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'fieldset' ? <fieldset ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</fieldset> :
-    tag == 'figcaption' ? <figcaption ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</figcaption> :
-    tag == 'figure' ? <figure ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</figure> :
-    tag == 'footer' ? <footer ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</footer> :
-    tag == 'form' ? <form ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</form> :
-    tag == 'h1' ? <h1 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h1> :
-    tag == 'h2' ? <h2 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h2> :
-    tag == 'h3' ? <h3 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h3> :
-    tag == 'h4' ? <h4 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h4> :
-    tag == 'h5' ? <h5 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h5> :
-    tag == 'h6' ? <h6 ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</h6> :
-    tag == 'head' ? <head ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</head> :
-    tag == 'header' ? <header ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</header> :
-    tag == 'hr' ? <hr ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'html' ? <html ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</html> :
-    tag == 'i' ? <i ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</i> :
-    tag == 'iframe' ? <iframe ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</iframe> :
-    tag == 'img' ? <img ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'input' ? <input ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'ins' ? <ins ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ins> :
-    tag == 'kbd' ? <kbd ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</kbd> :
-    tag == 'label' ? <label ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</label> :
-    tag == 'legend' ? <legend ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</legend> :
-    tag == 'li' ? <li ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</li> :
-    tag == 'link' ? <link ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'main' ? <main ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</main> :
-    tag == 'map' ? <map ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</map> :
-    tag == 'mark' ? <mark ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</mark> :
-    tag == 'menu' ? <menu ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</menu> :
-    tag == 'meta' ? <meta ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'meter' ? <meter ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</meter> :
-    tag == 'nav' ? <nav ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</nav> :
-    tag == 'noscript' ? <noscript ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</noscript> :
-    tag == 'object' ? <object ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</object> :
-    tag == 'ol' ? <ol ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ol> :
-    tag == 'optgroup' ? <optgroup ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</optgroup> :
-    tag == 'option' ? <option ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</option> :
-    tag == 'output' ? <output ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</output> :
-    tag == 'p' ? <p ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</p> :
-    tag == 'param' ? <param ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'picture' ? <picture ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</picture> :
-    tag == 'pre' ? <pre ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</pre> :
-    tag == 'progress' ? <progress ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</progress> :
-    tag == 'q' ? <q ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</q> :
-    tag == 'rp' ? <rp ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</rp> :
-    tag == 'rt' ? <rt ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</rt> :
-    tag == 'ruby' ? <ruby ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ruby> :
-    tag == 's' ? <s ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</s> :
-    tag == 'samp' ? <samp ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</samp> :
-    tag == 'script' ? <script ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</script> :
-    tag == 'section' ? <section ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</section> :
-    tag == 'select' ? <select ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</select> :
-    tag == 'slot' ? <slot ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</slot> :
-    tag == 'small' ? <small ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</small> :
-    tag == 'source' ? <source ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'span' ? <span ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</span> :
-    tag == 'strong' ? <strong ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</strong> :
-    tag == 'style' ? <style ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</style> :
-    tag == 'sub' ? <sub ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</sub> :
-    tag == 'summary' ? <summary ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</summary> :
-    tag == 'sup' ? <sup ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</sup> :
-    tag == 'table' ? <table ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</table> :
-    tag == 'tbody' ? <tbody ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</tbody> :
-    tag == 'td' ? <td ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</td> :
-    tag == 'template' ? <template ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</template> :
-    tag == 'textarea' ? <textarea ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</textarea> :
-    tag == 'tfoot' ? <tfoot ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</tfoot> :
-    tag == 'th' ? <th ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</th> :
-    tag == 'thead' ? <thead ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</thead> :
-    tag == 'time' ? <time ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</time> :
-    tag == 'title' ? <title ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</title> :
-    tag == 'tr' ? <tr ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</tr> :
-    tag == 'track' ? <track ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    tag == 'u' ? <u ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</u> :
-    tag == 'ul' ? <ul ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</ul> :
-    tag == 'var' ? <var ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</var> :
-    tag == 'video' ? <video ref={ref} css={mergedCss} {...restPropsRegularProps}>{children}</video> :
-    tag == 'wbr' ? <wbr ref={ref} css={mergedCss} {...restPropsRegularProps}/> :
-    <></>
+    tag == 'a' ? <a ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</a> :
+    tag == 'abbr' ? <abbr ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</abbr> :
+    tag == 'address' ? <address ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</address> :
+    tag == 'area' ? <area ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'article' ? <article ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</article> :
+    tag == 'aside' ? <aside ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</aside> :
+    tag == 'audio' ? <audio ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</audio> :
+    tag == 'b' ? <b ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</b> :
+    tag == 'base' ? <base ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'bdi' ? <bdi ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</bdi> :
+    tag == 'bdo' ? <bdo ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</bdo> :
+    tag == 'blockquote' ? <blockquote ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</blockquote> :
+    tag == 'body' ? <body ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</body> :
+    tag == 'br' ? <br ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'button' ? <button ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</button> :
+    tag == 'canvas' ? <canvas ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</canvas> :
+    tag == 'caption' ? <caption ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</caption> :
+    tag == 'cite' ? <cite ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</cite> :
+    tag == 'code' ? <code ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</code> :
+    tag == 'col' ? <col ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'colgroup' ? <colgroup ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</colgroup> :
+    tag == 'data' ? <data ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</data> :
+    tag == 'datalist' ? <datalist ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</datalist> :
+    tag == 'dd' ? <dd ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</dd> :
+    tag == 'del' ? <del ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</del> :
+    tag == 'details' ? <details ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</details> :
+    tag == 'dfn' ? <dfn ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</dfn> :
+    tag == 'dialog' ? <dialog ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</dialog> :
+    tag == 'div' ? <div ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</div> :
+    tag == 'dl' ? <dl ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</dl> :
+    tag == 'dt' ? <dt ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</dt> :
+    tag == 'em' ? <em ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</em> :
+    tag == 'embed' ? <embed ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'fieldset' ? <fieldset ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</fieldset> :
+    tag == 'figcaption' ? <figcaption ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</figcaption> :
+    tag == 'figure' ? <figure ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</figure> :
+    tag == 'footer' ? <footer ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</footer> :
+    tag == 'form' ? <form ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</form> :
+    tag == 'h1' ? <h1 ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</h1> :
+    tag == 'h2' ? <h2 ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</h2> :
+    tag == 'h3' ? <h3 ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</h3> :
+    tag == 'h4' ? <h4 ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</h4> :
+    tag == 'h5' ? <h5 ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</h5> :
+    tag == 'h6' ? <h6 ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</h6> :
+    tag == 'head' ? <head ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</head> :
+    tag == 'header' ? <header ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</header> :
+    tag == 'hr' ? <hr ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'html' ? <html ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</html> :
+    tag == 'i' ? <i ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</i> :
+    tag == 'iframe' ? <iframe ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</iframe> :
+    tag == 'img' ? <img ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'input' ? <input ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'ins' ? <ins ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</ins> :
+    tag == 'kbd' ? <kbd ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</kbd> :
+    tag == 'label' ? <label ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</label> :
+    tag == 'legend' ? <legend ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</legend> :
+    tag == 'li' ? <li ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</li> :
+    tag == 'link' ? <link ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'main' ? <main ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</main> :
+    tag == 'map' ? <map ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</map> :
+    tag == 'mark' ? <mark ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</mark> :
+    tag == 'menu' ? <menu ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</menu> :
+    tag == 'meta' ? <meta ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'meter' ? <meter ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</meter> :
+    tag == 'nav' ? <nav ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</nav> :
+    tag == 'noscript' ? <noscript ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</noscript> :
+    tag == 'object' ? <object ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</object> :
+    tag == 'ol' ? <ol ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</ol> :
+    tag == 'optgroup' ? <optgroup ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</optgroup> :
+    tag == 'option' ? <option ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</option> :
+    tag == 'output' ? <output ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</output> :
+    tag == 'p' ? <p ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</p> :
+    tag == 'param' ? <param ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'picture' ? <picture ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</picture> :
+    tag == 'pre' ? <pre ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</pre> :
+    tag == 'progress' ? <progress ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</progress> :
+    tag == 'q' ? <q ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</q> :
+    tag == 'rp' ? <rp ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</rp> :
+    tag == 'rt' ? <rt ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</rt> :
+    tag == 'ruby' ? <ruby ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</ruby> :
+    tag == 's' ? <s ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</s> :
+    tag == 'samp' ? <samp ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</samp> :
+    tag == 'script' ? <script ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</script> :
+    tag == 'section' ? <section ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</section> :
+    tag == 'select' ? <select ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</select> :
+    tag == 'slot' ? <slot ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</slot> :
+    tag == 'small' ? <small ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</small> :
+    tag == 'source' ? <source ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'span' ? <span ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</span> :
+    tag == 'strong' ? <strong ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</strong> :
+    tag == 'style' ? <style ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</style> :
+    tag == 'sub' ? <sub ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</sub> :
+    tag == 'summary' ? <summary ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</summary> :
+    tag == 'sup' ? <sup ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</sup> :
+    tag == 'table' ? <table ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</table> :
+    tag == 'tbody' ? <tbody ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</tbody> :
+    tag == 'td' ? <td ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</td> :
+    tag == 'template' ? <template ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</template> :
+    tag == 'textarea' ? <textarea ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</textarea> :
+    tag == 'tfoot' ? <tfoot ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</tfoot> :
+    tag == 'th' ? <th ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</th> :
+    tag == 'thead' ? <thead ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</thead> :
+    tag == 'time' ? <time ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</time> :
+    tag == 'title' ? <title ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</title> :
+    tag == 'tr' ? <tr ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</tr> :
+    tag == 'track' ? <track ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+    tag == 'u' ? <u ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</u> :
+    tag == 'ul' ? <ul ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</ul> :
+    tag == 'var' ? <var ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</var> :
+    tag == 'video' ? <video ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}>{children}</video> :
+    tag == 'wbr' ? <wbr ref={ref as RefObject<any>} className={incomingClassName} css={mergedCss} {...restPropsRegularPropsSansClassName}/> :
+          <></>
   );
 });

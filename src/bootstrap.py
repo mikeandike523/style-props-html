@@ -99,11 +99,11 @@ for tag, spec in html_element_specs.items():
     if spec.is_void_element:
         # className is auto-forwarded via {...restPropsRegularProps} if present
         spc_rcs_list.append(
-            f"tag == '{tag}' ? <{tag} ref={{ref}} className={{mergedClassName}} {{...restPropsRegularPropsSansClassName}}/> :"
+            f"tag == '{tag}' ? <{tag} ref={{ref as RefObject<any>}} className={{incomingClassName}} css={{mergedCss}} {{...restPropsRegularPropsSansClassName}}/> :"
         )
     else:
         spc_rcs_list.append(
-            f"tag == '{tag}' ? <{tag} ref={{ref}} className={{mergedClassName}} {{...restPropsRegularPropsSansClassName}}>{{children}}</{tag}> :"
+            f"tag == '{tag}' ? <{tag} ref={{ref as RefObject<any>}} className={{incomingClassName}} css={{mergedCss}} {{...restPropsRegularPropsSansClassName}}>{{children}}</{tag}> :"
         )
 
 Template().from_file("templates/file/StylePropsComponent.tsx.txt").render_save(
