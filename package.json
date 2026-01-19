@@ -1,6 +1,6 @@
 {
   "name": "style-props-html",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A library that facilitates passing CSS styles as regular props using a collection of custom components that mirror traditional DOM elements.",
   "exports": {
     ".": {
